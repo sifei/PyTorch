@@ -3,10 +3,8 @@ import torch.autograd as autograd
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-import torchwordemb
 import csv
 from torch.autograd import Variable
-import torchtext.data as data
 from sklearn.metrics import f1_score
 import numpy as np
 torch.manual_seed(1)
@@ -42,7 +40,7 @@ class CNNClassifier(nn.Module):
         x = F.max_pool1d(x, x.size(2)).squeeze(2)
         return x
 
-    def forward(self, x, word):
+    def forward(self, x):
         x = self.word_embedding(x)
         x = x.unsqueeze(1)
         x = [F.relu(conv(x)).squeeze(3) for conv in self.convs1]
