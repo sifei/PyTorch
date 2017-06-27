@@ -27,7 +27,8 @@ for context, label in training_data:
             word_to_idx[word] = len(word_to_idx)
     if label not in label_to_idx:
         label_to_idx[label] = len(label_to_idx)
-        
+word_to_idx[''] = len(word_to_idx)
+
 class CNNClassifier(nn.Module):
     def __init__(self, n_word, n_dim, n_class, kernel_num, kernel_sizes):
         super(CNNClassifier, self).__init__()
@@ -51,7 +52,7 @@ class CNNClassifier(nn.Module):
         logit = self.fc1(x)
         return logit
 
-model = CNNClassifier(len(word_to_idx), 200, len(label_to_idx),200, [3,4,5], len(character_to_idx), 20, 50, 128)
+model = CNNClassifier(len(word_to_idx), 200, len(label_to_idx),200, [3,4,5])
 print model
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.01)
@@ -88,17 +89,13 @@ for epoch in range(100):
                 out = torch.cat([out,model(word_list, word)],0)
             labels.append(label)
             idx += 1
-        #word_list = word_list.unsqueeze(0)
         label = make_sequence(labels, label_to_idx)
-        #label = Variable(torch.LongTensor([label_to_idx[label]]))
-        #out = model(word_list)
         loss = criterion(out, label)
         running_loss += loss.data[0]
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
         print 'batch: {:.1f}  loss: {:.4f}\r'.format(i,loss.data[0])
-    #print criterion(outs, labels).data[0]
     print('Loss: {}'.format(running_loss / len(data)))
 
 
